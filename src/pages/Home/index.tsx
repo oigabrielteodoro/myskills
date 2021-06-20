@@ -13,7 +13,7 @@ import {
 import { Button } from '../../components/Button';
 import { SkillCard } from '../../components/SkillCard';
 
-type Skill = {
+type SkillData = {
   id: string;
   title: string;
 }
@@ -21,7 +21,7 @@ type Skill = {
 export function Home() {
   const [newSkill, setNewSkill] = useState('');
   const [greeting, setGreeting] = useState('');
-  const [skills, setSkills] = useState<Skill[]>([]);
+  const [skills, setSkills] = useState<SkillData[]>([]);
 
   useEffect(() => {
     const currentHour = new Date().getHours();
@@ -48,6 +48,10 @@ export function Home() {
     setSkills(prevState => [...prevState, data])
 
     setNewSkill('');
+  }
+
+  function handleRemoveSkill(id: string) {
+    setSkills(prevState => prevState.filter(skill => skill.id !== id));
   }
 
   function handleInputChange(text: string) {
@@ -83,7 +87,10 @@ export function Home() {
         data={skills}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
-          <SkillCard title={item.title} />
+          <SkillCard 
+            title={item.title} 
+            onPress={() => handleRemoveSkill(item.id)} 
+          />
         )}
         showsVerticalScrollIndicator={false}
       />
