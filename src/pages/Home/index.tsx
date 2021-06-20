@@ -13,10 +13,15 @@ import {
 import { Button } from '../../components/Button';
 import { SkillCard } from '../../components/SkillCard';
 
+type Skill = {
+  id: string;
+  title: string;
+}
+
 export function Home() {
-  const [skills, setSkills] = useState([]);
   const [newSkill, setNewSkill] = useState('');
   const [greeting, setGreeting] = useState('');
+  const [skills, setSkills] = useState<Skill[]>([]);
 
   useEffect(() => {
     const currentHour = new Date().getHours();
@@ -31,16 +36,21 @@ export function Home() {
   }, [])
 
   function handleAddNewSkill() {
-    if (skills.includes(newSkill)) {
+    if (skills.some(skill => skill.title === newSkill)) {
       return Alert.alert('Opss... Pera ai!', `Já existe uma skill chamada ${newSkill} na sua lista!`);
     }
 
-    setSkills(prevState => [...prevState, newSkill])
+    const data = {
+      id: String(new Date().getTime()),
+      title: newSkill,
+    }
+
+    setSkills(prevState => [...prevState, data])
 
     setNewSkill('');
   }
 
-  function handleInputChange(text) {
+  function handleInputChange(text: string) {
     setNewSkill(text)
   }
 
@@ -71,9 +81,9 @@ export function Home() {
 
       <FlatList
         data={skills}
-        keyExtractor={item => item}
+        keyExtractor={item => item.id}
         renderItem={({ item }) => (
-          <SkillCard skill={item} />
+          <SkillCard title={item.title} />
         )}
         showsVerticalScrollIndicator={false}
       />
