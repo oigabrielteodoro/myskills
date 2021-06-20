@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { 
   Text, 
@@ -7,6 +7,7 @@ import {
   TextInput, 
   Platform,
   Alert,
+  FlatList,
 } from 'react-native'
 
 import { Button } from '../../components/Button';
@@ -15,6 +16,19 @@ import { SkillCard } from '../../components/SkillCard';
 export function Home() {
   const [skills, setSkills] = useState([]);
   const [newSkill, setNewSkill] = useState('');
+  const [greeting, setGreeting] = useState('');
+
+  useEffect(() => {
+    const currentHour = new Date().getHours();
+
+    if (currentHour < 12) {
+      setGreeting('Good morning')
+    } else if (currentHour >= 12 && currentHour < 18) {
+      setGreeting('Good afternoon')
+    } else {
+      setGreeting('Good night')
+    }
+  }, [])
 
   function handleAddNewSkill() {
     if (skills.includes(newSkill)) {
@@ -22,6 +36,12 @@ export function Home() {
     }
 
     setSkills(prevState => [...prevState, newSkill])
+
+    setNewSkill('');
+  }
+
+  function handleInputChange(text) {
+    setNewSkill(text)
   }
 
   return (
@@ -29,12 +49,16 @@ export function Home() {
       <Text style={styles.title}>
         Welcome, Gabriel
       </Text>
+      <Text style={styles.greetings}>
+        {greeting}
+      </Text>
 
       <TextInput
+        value={newSkill}
         style={styles.input}
         placeholder="New skill"
         placeholderTextColor="#555"
-        onChangeText={setNewSkill}
+        onChangeText={handleInputChange}
       />
 
       <Button onPress={handleAddNewSkill}>
@@ -45,9 +69,14 @@ export function Home() {
         My Skills
       </Text>
 
-      {skills.map(skill => (
-        <SkillCard key={skill} skill={skill} />
-      ))}
+      <FlatList
+        data={skills}
+        keyExtractor={item => item}
+        renderItem={({ item }) => (
+          <SkillCard skill={item} />
+        )}
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   )
 }
@@ -72,4 +101,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     borderRadius: 7,
   },
+  greetings: {
+    color: '#fff',
+  }
 })
